@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # Express.js backend service
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edp-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=edp_database
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    networks:
+      - edp-network
+    restart: unless-stopped
+    command: npm run dev
+
+  # PostgreSQL database service
+  db:
+    image: postgres:15-alpine
+    container_name: edp_database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=edp_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - edp-network
+    restart: unless-stopped
+
+networks:
+  edp-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

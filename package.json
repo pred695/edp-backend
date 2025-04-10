@@ -1,0 +1,28 @@
+{
+  "name": "edp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pred695/edp-backend.git"
+  },
+  "author": "pred695",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pred695/edp-backend/issues"
+  },
+  "homepage": "https://github.com/pred695/edp-backend#readme",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.9",
+    "pg": "^8.14.1"
+  }
+}
