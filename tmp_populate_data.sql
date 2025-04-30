@@ -1,9 +1,3 @@
-#!/bin/bash
-TMP_SQL_FILE="./tmp_populate_data.sql"
-echo "Creating temporary SQL file with dummy data..."
-
-# Create the SQL file with proper quoting
-cat > "$TMP_SQL_FILE" << 'EOF'
 -- Populate users table
 INSERT INTO users (username, email, password) VALUES
 ('alice', 'alice@example.com', '$2b$10$eImiTXuWVxfM37uY4JANj.Qn5fC7/NH8Up1TJqG/yt7m0bY5OT8Xm'), -- bcrypt hash for 'password123'
@@ -93,8 +87,3 @@ SELECT 'Cameras: ' || COUNT(*) AS camera_count FROM camera;
 SELECT 'Employees: ' || COUNT(*) AS employee_count FROM employee;
 SELECT 'Items: ' || COUNT(*) AS item_count FROM items;
 SELECT 'CV Models: ' || COUNT(*) AS cv_model_count FROM cv_models;
-EOF
-
-# Run the SQL script using psql (replace <dbname> and <user> with appropriate values)
-psql -U postgres -d edp_database -f "$TMP_SQL_FILE"
-

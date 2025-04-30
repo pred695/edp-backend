@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Express.js backend service
   server:
@@ -16,6 +14,7 @@ services:
       - DB_NAME=edp_database
       - DB_USER=postgres
       - DB_PASSWORD=postgres
+      - DB_URL=postgresql://postgres:postgres@db:5432/edp_database
     volumes:
       - .:/app
       - /app/node_modules
