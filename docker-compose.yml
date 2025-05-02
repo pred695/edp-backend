@@ -1,8 +1,8 @@
 services:
   # Express.js backend service
-  server:
+  backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: edp-backend
     ports:
@@ -15,8 +15,9 @@ services:
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_URL=postgresql://postgres:postgres@db:5432/edp_database
+      - CORS_ORIGIN=http://localhost:5173,http://localhost:80
     volumes:
-      - .:/app
+      - ./backend:/app
       - /app/node_modules
     depends_on:
       - db
@@ -24,6 +25,25 @@ services:
       - edp-network
     restart: unless-stopped
     command: npm run dev
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: edp-frontend
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_API_URL=http://backend:3000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - edp-network
+    restart: unless-stopped
 
   # PostgreSQL database service
   db:
