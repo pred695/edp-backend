@@ -10,6 +10,7 @@ const ENVIRONMENT = process.env.NODE_ENV || 'development';
 // Database and Routes
 const pool = require('./config');
 const userRoutes = require('./routes/userRoutes');
+const itemRoutes = require('./routes/itemRoutes');
 
 // Enhanced CORS Configuration
 const corsOptions = {
@@ -104,6 +105,7 @@ app.get('/items', async (req, res) => {
 
 // User Routes
 app.use('/api/users', userRoutes);
+app.use('/api/items', itemRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
