@@ -13,14 +13,8 @@ RUN npm ci
 # Copy the rest of the application code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Expose port used by Vite dev server (default 5173)
+EXPOSE 5173
 
-# Install serve for a production static server
-RUN npm install -g serve
-
-# Expose port 80
-EXPOSE 80
-
-# Start the static server
-CMD ["serve", "-s", "dist", "-l", "80"]
+# Start the development server
+CMD ["npm", "run", "dev", "--", "--host"]
