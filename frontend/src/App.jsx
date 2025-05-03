@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import useAuthStore from './store/AuthStore';
 import Dashboard from './pages/Dashboard';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Items from './pages/Items';
+import VideoUpload from './pages/VideoUpload';
+import VideoList from './pages/VideoList';
+import VideoDetail from './pages/VideoDetail';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const { isAuth } = useAuthStore((state) => ({
-    isAuth: state.isAuth,
-  }));
-  
   useEffect(() => {
     // Simulate loading (will be replaced with actual loading logic)
     setTimeout(() => {
@@ -29,6 +28,10 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/items" element={<Items />} />
+      <Route path="/videos" element={<VideoList />} />
+      <Route path="/videos/upload" element={<VideoUpload />} />
+      <Route path="/videos/:id" element={<VideoDetail />} />
     </Routes>
   );
 }
