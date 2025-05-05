@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 import Items from './pages/Items';
 import VideoUpload from './pages/VideoUpload';
 import VideoList from './pages/VideoList';
+import RoiList from './pages/RoiList';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -30,6 +31,7 @@ function App() {
       <Route path="/items" element={<Items />} />
       <Route path="/videos" element={<VideoList />} />
       <Route path="/videos/upload" element={<VideoUpload />} />
+      <Route path="/roi" element={<RoiList />} />
     </Routes>
   );
 }

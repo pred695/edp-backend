@@ -82,4 +82,56 @@ export const getVideoStreamUrl = (id) => {
   return `${baseURL}/videos/${id}/stream`;
 };
 
+// ROI APIs
+export const getRoiVideos = (params) => {
+  return api.get('/roi', { params });
+};
+
+export const getRoiVideoById = (id) => {
+  return api.get(`/roi/${id}`);
+};
+
+export const uploadRoiVideo = (formData, onProgress) => {
+  return api.post('/roi', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    onUploadProgress: onProgress,
+  });
+};
+
+export const deleteRoiVideo = (id) => {
+  return api.delete(`/roi/${id}`);
+};
+
+// ROI video streaming helper
+export const getRoiVideoStreamUrl = (id) => {
+  return `${baseURL}/roi/${id}/stream`;
+};
+
+// Logs APIs
+export const getLogs = (params) => {
+  return api.get('/logs', { params });
+};
+
+export const getLogById = (id) => {
+  return api.get(`/logs/${id}`);
+};
+
+export const uploadLog = (formData, onProgress) => {
+  return api.post('/logs', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    onUploadProgress: onProgress,
+  });
+};
+
+export const deleteLog = (id) => {
+  return api.delete(`/logs/${id}`);
+};
+
+export const getLogContentUrl = (id, download = false) => {
+  return `${baseURL}/logs/${id}/content${download ? '?download=true' : ''}`;
+};
 export default api;

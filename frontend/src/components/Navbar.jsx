@@ -18,7 +18,7 @@ import {
   Image,
 } from '@chakra-ui/react';
 import React from 'react';
-import { BiLogOut, BiUserCheck, BiUserPlus, BiBox, BiVideo, BiTag } from 'react-icons/bi';
+import { BiLogOut, BiUserCheck, BiUserPlus, BiBox, BiVideo, BiTag, BiMap } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../store/AuthStore';
@@ -137,6 +137,14 @@ function Navbar() {
               leftIcon={<BiVideo />}
             >
               Videos
+            </Button>
+            <Button
+              variant={isActive('/roi') ? "solid" : "ghost"}
+              colorScheme="purple"
+              onClick={() => navigate('/roi')}
+              leftIcon={<BiMap />}
+            >
+             Logs
             </Button>
             {/* Add RFID Registration Button */}
             <Button
