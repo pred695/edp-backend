@@ -21,12 +21,18 @@ import {
   AlertTitle,
   AlertDescription,
   Badge,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { FiBox, FiUser, FiDatabase, FiList, FiPlus, FiAlertTriangle } from 'react-icons/fi';
+import { FiBox, FiUser, FiDatabase, FiList, FiPlus, FiAlertTriangle, FiPieChart } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import InventoryInsights from '../components/InventoryInsights';
 import useAuthStore from '../store/AuthStore';
 import api from '../utils/api';
 
@@ -192,129 +198,144 @@ function Dashboard() {
           </Alert>
         )}
 
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6} mb={6}>
-          <Stat
-            px={{ base: 4, md: 6 }}
-            py="5"
-            shadow="md"
-            border="1px"
-            borderColor="gray.200"
-            rounded="lg"
-            bg="white"
-          >
-            <Flex justifyContent="space-between">
-              <Box pl={{ base: 2, md: 4 }}>
-                <StatLabel fontWeight="medium">Total Items</StatLabel>
-                <StatNumber fontSize="2xl">{dashboardData.totalItems}</StatNumber>
-              </Box>
-              <Box
-                my="auto"
-                color="edpSecondary"
-                alignContent="center"
-              >
-                <FiBox size="3em" />
-              </Box>
-            </Flex>
-          </Stat>
+        <Tabs colorScheme="purple" variant="enclosed" mb={6}>
+          <TabList>
+            <Tab>Overview</Tab>
+            <Tab>Inventory Insights</Tab>
+          </TabList>
           
-          <Stat
-            px={{ base: 4, md: 6 }}
-            py="5"
-            shadow="md"
-            border="1px"
-            borderColor="gray.200"
-            rounded="lg"
-            bg="white"
-            position="relative"
-            overflow="hidden"
-            onClick={() => navigate('/items?expired=true')}
-            cursor="pointer"
-            _hover={{ transform: 'translateY(-5px)', transition: 'transform 0.3s' }}
-          >
-            <Flex justifyContent="space-between">
-              <Box pl={{ base: 2, md: 4 }}>
-                <StatLabel fontWeight="medium">Expired Items</StatLabel>
-                <StatNumber fontSize="2xl">{dashboardData.expiredItems.length}</StatNumber>
-              </Box>
-              <Box
-                my="auto"
-                color="red.500"
-                alignContent="center"
-              >
-                <FiAlertTriangle size="3em" />
-              </Box>
-            </Flex>
-            {dashboardData.expiredItems.length > 0 && (
-              <Box
-                position="absolute"
-                bottom="0"
-                left="0"
-                right="0"
-                bg="red.500"
-                h="4px"
-                animation="pulse 2s infinite"
-                sx={{
-                  "@keyframes pulse": {
-                    "0%": { opacity: 0.4 },
-                    "50%": { opacity: 1 },
-                    "100%": { opacity: 0.4 }
-                  }
-                }}
-              />
-            )}
-          </Stat>
-          
-          <Stat
-            px={{ base: 4, md: 6 }}
-            py="5"
-            shadow="md"
-            border="1px"
-            borderColor="gray.200"
-            rounded="lg"
-            bg="white"
-            onClick={() => navigate('/items')}
-            cursor="pointer"
-            _hover={{ transform: 'translateY(-5px)', transition: 'transform 0.3s' }}
-          >
-            <Flex justifyContent="space-between">
-              <Box pl={{ base: 2, md: 4 }}>
-                <StatLabel fontWeight="medium">Manage Inventory</StatLabel>
-                <StatNumber fontSize="2xl">Go</StatNumber>
-              </Box>
-              <Box
-                my="auto"
-                color="edpSecondary"
-                alignContent="center"
-              >
-                <FiDatabase size="3em" />
-              </Box>
-            </Flex>
-          </Stat>
-        </SimpleGrid>
+          <TabPanels>
+            <TabPanel px={0}>
+              <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6} mb={6}>
+                <Stat
+                  px={{ base: 4, md: 6 }}
+                  py="5"
+                  shadow="md"
+                  border="1px"
+                  borderColor="gray.200"
+                  rounded="lg"
+                  bg="white"
+                >
+                  <Flex justifyContent="space-between">
+                    <Box pl={{ base: 2, md: 4 }}>
+                      <StatLabel fontWeight="medium">Total Items</StatLabel>
+                      <StatNumber fontSize="2xl">{dashboardData.totalItems}</StatNumber>
+                    </Box>
+                    <Box
+                      my="auto"
+                      color="edpSecondary"
+                      alignContent="center"
+                    >
+                      <FiBox size="3em" />
+                    </Box>
+                  </Flex>
+                </Stat>
+                
+                <Stat
+                  px={{ base: 4, md: 6 }}
+                  py="5"
+                  shadow="md"
+                  border="1px"
+                  borderColor="gray.200"
+                  rounded="lg"
+                  bg="white"
+                  position="relative"
+                  overflow="hidden"
+                  onClick={() => navigate('/items?expired=true')}
+                  cursor="pointer"
+                  _hover={{ transform: 'translateY(-5px)', transition: 'transform 0.3s' }}
+                >
+                  <Flex justifyContent="space-between">
+                    <Box pl={{ base: 2, md: 4 }}>
+                      <StatLabel fontWeight="medium">Expired Items</StatLabel>
+                      <StatNumber fontSize="2xl">{dashboardData.expiredItems.length}</StatNumber>
+                    </Box>
+                    <Box
+                      my="auto"
+                      color="red.500"
+                      alignContent="center"
+                    >
+                      <FiAlertTriangle size="3em" />
+                    </Box>
+                  </Flex>
+                  {dashboardData.expiredItems.length > 0 && (
+                    <Box
+                      position="absolute"
+                      bottom="0"
+                      left="0"
+                      right="0"
+                      bg="red.500"
+                      h="4px"
+                      animation="pulse 2s infinite"
+                      sx={{
+                        "@keyframes pulse": {
+                          "0%": { opacity: 0.4 },
+                          "50%": { opacity: 1 },
+                          "100%": { opacity: 0.4 }
+                        }
+                      }}
+                    />
+                  )}
+                </Stat>
+                
+                <Stat
+                  px={{ base: 4, md: 6 }}
+                  py="5"
+                  shadow="md"
+                  border="1px"
+                  borderColor="gray.200"
+                  rounded="lg"
+                  bg="white"
+                  onClick={() => navigate('/items')}
+                  cursor="pointer"
+                  _hover={{ transform: 'translateY(-5px)', transition: 'transform 0.3s' }}
+                >
+                  <Flex justifyContent="space-between">
+                    <Box pl={{ base: 2, md: 4 }}>
+                      <StatLabel fontWeight="medium">Manage Inventory</StatLabel>
+                      <StatNumber fontSize="2xl">Go</StatNumber>
+                    </Box>
+                    <Box
+                      my="auto"
+                      color="edpSecondary"
+                      alignContent="center"
+                    >
+                      <FiDatabase size="3em" />
+                    </Box>
+                  </Flex>
+                </Stat>
+              </SimpleGrid>
 
-        <Box
-          p={5}
-          shadow="md"
-          borderWidth="1px"
-          borderRadius="lg"
-          bg="white"
-          mb={6}
-        >
-          <Heading size="md" mb={4} color="edpPrimary">
-            Getting Started
-          </Heading>
-          <Text mb={4}>
-            Welcome to the EDP dashboard. This platform allows you to:
-          </Text>
-          <Box as="ul" pl={5} mb={4}>
-            <Box as="li" pb={1}>Track inventory with RFID technology</Box>
-            <Box as="li" pb={1}>Monitor item status and location</Box>
-            <Box as="li" pb={1}>Generate reports and analyze data</Box>
-          </Box>
-          <Text>
-            More features coming soon!
-          </Text>
-        </Box>
+              <Box
+                p={5}
+                shadow="md"
+                borderWidth="1px"
+                borderRadius="lg"
+                bg="white"
+                mb={6}
+              >
+                <Heading size="md" mb={4} color="edpPrimary">
+                  Getting Started
+                </Heading>
+                <Text mb={4}>
+                  Welcome to the EDP dashboard. This platform allows you to:
+                </Text>
+                <Box as="ul" pl={5} mb={4}>
+                  <Box as="li" pb={1}>Track inventory with RFID technology</Box>
+                  <Box as="li" pb={1}>Monitor item status and location</Box>
+                  <Box as="li" pb={1}>Generate reports and analyze data</Box>
+                </Box>
+                <Text>
+                  More features coming soon!
+                </Text>
+              </Box>
+            </TabPanel>
+            
+            <TabPanel px={0}>
+              <InventoryInsights />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
       </Box>
     </>
   );

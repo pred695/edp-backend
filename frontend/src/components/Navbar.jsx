@@ -18,7 +18,7 @@ import {
   Image,
 } from '@chakra-ui/react';
 import React from 'react';
-import { BiLogOut, BiUserCheck, BiUserPlus, BiBox, BiVideo, BiTag, BiMap } from 'react-icons/bi';
+import { BiLogOut, BiUserCheck, BiUserPlus, BiBox, BiVideo, BiTag, BiMap, BiPieChart } from 'react-icons/bi';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import useAuthStore from '../store/AuthStore';
@@ -129,6 +129,14 @@ function Navbar() {
               leftIcon={<BiBox />}
             >
               Items
+            </Button>
+            <Button
+              variant={isActive('/analytics') ? "solid" : "ghost"}
+              colorScheme="purple"
+              onClick={() => navigate('/analytics')}
+              leftIcon={<BiPieChart />}
+            >
+              Analytics
             </Button>
             <Button
               variant={isActive('/videos') ? "solid" : "ghost"}
@@ -252,8 +260,14 @@ function Navbar() {
                 <MenuItem onClick={() => navigate('/items')}>
                   <BiBox style={{ marginRight: '8px' }} /> Items
                 </MenuItem>
+                <MenuItem onClick={() => navigate('/analytics')}>
+                  <BiPieChart style={{ marginRight: '8px' }} /> Analytics
+                </MenuItem>
                 <MenuItem onClick={() => navigate('/videos')}>
                   <BiVideo style={{ marginRight: '8px' }} /> Videos
+                </MenuItem>
+                <MenuItem onClick={() => navigate('/roi')}>
+                  <BiMap style={{ marginRight: '8px' }} /> Logs
                 </MenuItem>
                 {/* Add RFID Registration Menu Item */}
                 <MenuItem 
