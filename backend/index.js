@@ -12,6 +12,7 @@ const pool = require('./config');
 const userRoutes = require('./routes/userRoutes');
 const itemRoutes = require('./routes/itemRoutes');
 const videoRoutes = require('./routes/videoRoutes');
+const rfidRoutes = require('./routes/rfidRoutes');
 // Enhanced CORS Configuration
 const corsOptions = {
   origin: process.env.CORS_ORIGIN 
@@ -107,6 +108,7 @@ app.get('/items', async (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/videos', videoRoutes);
+app.use('/api/rfid', rfidRoutes);
 // 404 Handler
 app.use((req, res, next) => {
   res.status(404).json({

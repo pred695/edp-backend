@@ -123,8 +123,9 @@ module.exports.logIn = async (req, res) => {
                 res.cookie('jwt', token, {
                     httpOnly: true,
                     maxAge: config.jwtExpiration * 1000,
-                    secure: process.env.NODE_ENV === 'production', // set to true if using https
-                    sameSite: "none",
+                    secure: true, 
+                    sameSite: 'none',
+                    path: '/'
                 });
                 
                 res.status(200).json({ 

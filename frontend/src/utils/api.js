@@ -38,6 +38,16 @@ export const getItemById = (id) => {
   return api.get(`/items/${id}`);
 };
 
-// Add more API functions as needed
+export const registerRfid = (rfidData) => {
+  return api.post('/rfid/register', rfidData);
+};
+
+export const getRfidTags = () => {
+  return api.get('/rfid');
+};
+
+export const deleteRfid = (rfid) => {
+  return api.delete(`/rfid/${rfid}`);
+};
 
 export default api;

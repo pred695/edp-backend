@@ -35,20 +35,19 @@ module.exports.registerItem = async (req, res) => {
             weight, 
             dry, 
             fragile, 
-            threshold,
+            threshold, // We'll ignore this value
             expiry_date,
             camera_id,
             rfid
         } = req.body;
 
-        // Validate weight and threshold as positive numbers
+        // Validate weight as positive number
         if (isNaN(weight) || weight <= 0) {
             throw new Error('Invalid weight value');
         }
 
-        if (isNaN(threshold) || threshold <= 0) {
-            throw new Error('Invalid threshold value');
-        }
+        // Always set threshold to 20, ignoring the input value
+        const fixedThreshold = 20;
 
         // Ensure perishable items have an expiry date
         if (perishable && !expiry_date) {
@@ -100,7 +99,7 @@ module.exports.registerItem = async (req, res) => {
         // Set automatic timestamp for item registration
         const timestamp_in = new Date().toISOString();
 
-        // Create new item
+        // Create new item with fixed threshold value of 20
         const itemResult = await pool.query(
             `INSERT INTO items (
                 id, 
@@ -122,7 +121,7 @@ module.exports.registerItem = async (req, res) => {
                 weight,
                 dry,
                 fragile,
-                threshold,
+                fixedThreshold, // Using fixed value of 20 instead of input threshold
                 expiry_date ? new Date(expiry_date) : null,
                 timestamp_in,
                 camera_id,
