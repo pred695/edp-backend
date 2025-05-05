@@ -7,7 +7,6 @@ import Signup from './pages/Signup';
 import Items from './pages/Items';
 import VideoUpload from './pages/VideoUpload';
 import VideoList from './pages/VideoList';
-import VideoDetail from './pages/VideoDetail';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);

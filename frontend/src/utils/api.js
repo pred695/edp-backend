@@ -38,6 +38,7 @@ export const getItemById = (id) => {
   return api.get(`/items/${id}`);
 };
 
+// RFID APIs
 export const registerRfid = (rfidData) => {
   return api.post('/rfid/register', rfidData);
 };
@@ -48,6 +49,37 @@ export const getRfidTags = () => {
 
 export const deleteRfid = (rfid) => {
   return api.delete(`/rfid/${rfid}`);
+};
+
+// Video APIs
+export const getVideos = (params) => {
+  return api.get('/videos', { params });
+};
+
+export const getVideoById = (id) => {
+  return api.get(`/videos/${id}`);
+};
+
+export const uploadVideo = (formData, onProgress) => {
+  return api.post('/videos', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    onUploadProgress: onProgress,
+  });
+};
+
+export const updateVideoStatus = (id, data) => {
+  return api.put(`/videos/${id}`, data);
+};
+
+export const deleteVideo = (id) => {
+  return api.delete(`/videos/${id}`);
+};
+
+// Video streaming helper
+export const getVideoStreamUrl = (id) => {
+  return `${baseURL}/videos/${id}/stream`;
 };
 
 export default api;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Box,
   Button,
@@ -40,12 +40,13 @@ import {
   FiClock,
   FiCheck,
   FiX,
-  FiLoader
+  FiLoader,
+  FiMaximize
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import useAuthStore from '../store/AuthStore';
-import api from '../utils/api';
+import { getVideos, deleteVideo, getVideoStreamUrl } from '../utils/api';
 
 function VideoList() {
   const [videos, setVideos] = useState([]);
@@ -55,6 +56,10 @@ function VideoList() {
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [streamUrl, setStreamUrl] = useState('');
+  
+  // Add a ref for the video element
+  const videoRef = useRef(null);
   
   // Add state for the video modal
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -69,11 +74,9 @@ function VideoList() {
   const fetchVideos = async (pageNum = page) => {
     setLoading(true);
     try {
-      const response = await api.get('/videos', {
-        params: {
-          page: pageNum,
-          limit
-        }
+      const response = await getVideos({
+        page: pageNum,
+        limit
       });
       
       setVideos(response.data.videos);
@@ -123,7 +126,7 @@ function VideoList() {
 
   const handleDeleteVideo = async (id) => {
     try {
-      await api.delete(`/videos/${id}`);
+      await deleteVideo(id);
       
       toast({
         title: 'Video deleted',
@@ -152,7 +155,23 @@ function VideoList() {
   // Handle opening the video player modal
   const handleViewVideo = (video) => {
     setSelectedVideo(video);
+    // Generate the stream URL using the helper function
+    const url = getVideoStreamUrl(video.id);
+    setStreamUrl(url);
     onOpen();
+  };
+
+  // Handle fullscreen functionality
+  const handleFullscreen = () => {
+    if (videoRef.current) {
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen();
+      } else if (videoRef.current.webkitRequestFullscreen) { /* Safari */
+        videoRef.current.webkitRequestFullscreen();
+      } else if (videoRef.current.msRequestFullscreen) { /* IE11 */
+        videoRef.current.msRequestFullscreen();
+      }
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -334,27 +353,42 @@ function VideoList() {
           <ModalCloseButton />
           <ModalBody>
             {selectedVideo && (
-              <Box borderRadius="md" overflow="hidden">
+              <Box borderRadius="md" overflow="hidden" position="relative">
                 <video 
+                  ref={videoRef}
                   controls 
                   width="100%" 
                   autoPlay
-                  src={`${api.defaults.baseURL}/videos/${selectedVideo.id}/stream`}
+                  src={streamUrl}
                 >
                   Your browser does not support the video tag.
                 </video>
+                <IconButton
+                  icon={<FiMaximize />}
+                  aria-label="Fullscreen"
+                  position="absolute"
+                  bottom="10px"
+                  right="10px"
+                  colorScheme="blue"
+                  size="sm"
+                  opacity="0.8"
+                  _hover={{ opacity: 1 }}
+                  onClick={handleFullscreen}
+                />
               </Box>
             )}
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
             <Button 
-              variant="outline" 
-              onClick={() => navigate(`/videos/${selectedVideo?.id}`)}
+              leftIcon={<FiMaximize />}
+              colorScheme="blue" 
+              mr={3} 
+              onClick={handleFullscreen}
             >
-              View Details
+              Fullscreen
+            </Button>
+            <Button onClick={onClose}>
+              Close
             </Button>
           </ModalFooter>
         </ModalContent>

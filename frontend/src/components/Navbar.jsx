@@ -104,7 +104,7 @@ function Navbar() {
       >
         <Link to="/">
         <Image
-          src="../../public/SEWA.png"
+          src="../../SEWA.png"
           alt="EDP Logo"
           ml={['20px', '30px', '40px', '50px']}
           height={['30px', '35px', '40px', '45px']} // adjust height responsively

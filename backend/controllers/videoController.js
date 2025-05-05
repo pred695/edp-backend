@@ -272,11 +272,15 @@ module.exports.streamVideo = async (req, res) => {
     // Construct the path to the video file
     const fs = require('fs');
     const path = require('path');
-    const videoPath = path.join(__dirname, '..', 'uploads', `video_${video.id}.mp4`);
-    console.log("Path: ", videoPath);
+    
+    // Use the correct path to the uploads directory
+    // __dirname is controllers directory, so go up one level to get to backend directory
+    const videoPath = path.join(__dirname, '../uploads', video.filename);
+    console.log("Video path:", videoPath);
+    
     // Check if the file exists
     if (!fs.existsSync(videoPath)) {
-      return res.status(404).json({ message: 'Video file not found' });
+      return res.status(404).json({ message: 'Video file not found', path: videoPath });
     }
 
     // Get file stats
@@ -299,7 +303,7 @@ module.exports.streamVideo = async (req, res) => {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
         'Content-Length': chunksize,
-        'Content-Type': 'video/mp4',
+        'Content-Type': video.format || 'video/mp4',
       };
 
       // Send partial content
@@ -309,7 +313,7 @@ module.exports.streamVideo = async (req, res) => {
       // Send entire file if no range is requested
       const headers = {
         'Content-Length': fileSize,
-        'Content-Type': 'video/mp4',
+        'Content-Type': video.format || 'video/mp4',
       };
       
       res.writeHead(200, headers);
