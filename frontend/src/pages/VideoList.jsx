@@ -22,6 +22,14 @@ import {
   MenuItem,
   HStack,
   Tag,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure
 } from '@chakra-ui/react';
 import { Helmet } from 'react-helmet-async';
 import { 
@@ -46,6 +54,10 @@ function VideoList() {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  
+  // Add state for the video modal
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { isAuth } = useAuthStore((state) => ({
     isAuth: state.isAuth,
@@ -135,6 +147,12 @@ function VideoList() {
         position: 'top',
       });
     }
+  };
+
+  // Handle opening the video player modal
+  const handleViewVideo = (video) => {
+    setSelectedVideo(video);
+    onOpen();
   };
 
   const getStatusBadge = (status) => {
@@ -249,10 +267,10 @@ function VideoList() {
                           <HStack spacing={2}>
                             <IconButton
                               icon={<FiEye />}
-                              aria-label="View video details"
+                              aria-label="View video"
                               colorScheme="blue"
                               variant="ghost"
-                              onClick={() => navigate(`/videos/${video.id}`)}
+                              onClick={() => handleViewVideo(video)}
                             />
                             <Menu>
                               <MenuButton
@@ -305,6 +323,42 @@ function VideoList() {
           </>
         )}
       </Box>
+
+      {/* Video Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            {selectedVideo?.original_filename || "Video Player"}
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            {selectedVideo && (
+              <Box borderRadius="md" overflow="hidden">
+                <video 
+                  controls 
+                  width="100%" 
+                  autoPlay
+                  src={`${api.defaults.baseURL}/videos/${selectedVideo.id}/stream`}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </Box>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate(`/videos/${selectedVideo?.id}`)}
+            >
+              View Details
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

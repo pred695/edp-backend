@@ -16,6 +16,9 @@ router.get('/', VideoController.getVideos);
 // Get a specific video by ID
 router.get('/:id', VideoController.getVideoById);
 
+// Stream video file
+router.get('/:id/stream', VideoController.streamVideo);
+
 // Update video status and results
 router.put('/:id', VideoController.updateVideoStatus);
 

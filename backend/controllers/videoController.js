@@ -249,3 +249,77 @@ module.exports.deleteVideo = async (req, res) => {
     });
   }
 };
+
+// @desc    Stream video file
+// @route   GET /api/videos/:id/stream
+// @access  Private
+module.exports.streamVideo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // First, get the video information from the database
+    const videoResult = await pool.query(
+      'SELECT * FROM videos WHERE id = $1',
+      [id]
+    );
+
+    if (videoResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Video not found' });
+    }
+
+    const video = videoResult.rows[0];
+    
+    // Construct the path to the video file
+    const fs = require('fs');
+    const path = require('path');
+    const videoPath = path.join(__dirname, '..', 'uploads', `video_${video.id}.mp4`);
+    console.log("Path: ", videoPath);
+    // Check if the file exists
+    if (!fs.existsSync(videoPath)) {
+      return res.status(404).json({ message: 'Video file not found' });
+    }
+
+    // Get file stats
+    const stat = fs.statSync(videoPath);
+    const fileSize = stat.size;
+    const range = req.headers.range;
+
+    // Handle range requests (for video seeking)
+    if (range) {
+      // Parse Range
+      // Example: "bytes=32324-"
+      const parts = range.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunksize = (end - start) + 1;
+      const file = fs.createReadStream(videoPath, { start, end });
+      
+      // Create response headers
+      const headers = {
+        'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Type': 'video/mp4',
+      };
+
+      // Send partial content
+      res.writeHead(206, headers);
+      file.pipe(res);
+    } else {
+      // Send entire file if no range is requested
+      const headers = {
+        'Content-Length': fileSize,
+        'Content-Type': 'video/mp4',
+      };
+      
+      res.writeHead(200, headers);
+      fs.createReadStream(videoPath).pipe(res);
+    }
+  } catch (err) {
+    console.error('Error streaming video:', err);
+    res.status(500).json({ 
+      message: 'Error streaming video', 
+      error: err.message 
+    });
+  }
+};

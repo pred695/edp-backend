@@ -20,9 +20,10 @@ import {
   Input,
   IconButton,
   HStack,
+  Icon,
 } from '@chakra-ui/react';
 import { Helmet } from 'react-helmet-async';
-import { FiPlus, FiFilter, FiRefreshCw, FiEye } from 'react-icons/fi';
+import { FiPlus, FiFilter, FiRefreshCw, FiEye, FiCalendar, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import useAuthStore from '../store/AuthStore';
@@ -41,6 +42,9 @@ function Items() {
   const [perishableFilter, setPerishableFilter] = useState('');
   const [expiredFilter, setExpiredFilter] = useState('');
   const [selectedItemId, setSelectedItemId] = useState(null);
+  // Add sort state variables
+  const [sortBy, setSortBy] = useState('timestamp_in');
+  const [sortOrder, setSortOrder] = useState('desc'); // 'desc' for newest first
 
   const { isAuth } = useAuthStore((state) => ({
     isAuth: state.isAuth,
@@ -67,7 +71,10 @@ function Items() {
       const params = {
         page: pageNum,
         limit: limitNum,
-        ...filters
+        ...filters,
+        // Add sorting parameters
+        sort_by: sortBy,
+        sort_order: sortOrder
       };
       
       // Add category filter if set
@@ -155,6 +162,23 @@ function Items() {
     onItemDetailOpen();
   };
 
+  // Add handler for changing sort
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+  };
+
+  // Add handler for toggling sort order
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
+  // Apply sort when either sort field or direction changes
+  useEffect(() => {
+    if (isAuth) {
+      fetchItems();
+    }
+  }, [sortBy, sortOrder]);
+
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
@@ -225,6 +249,30 @@ function Items() {
               <option value="false">Not Expired</option>
             </Select>
           </Box>
+          {/* Add Sort By dropdown */}
+          <Box flex="1">
+            <Text mb={2} fontWeight="medium">Sort By</Text>
+            <Flex>
+              <Select 
+                value={sortBy}
+                onChange={handleSortChange}
+                mr={2}
+              >
+                <option value="timestamp_in">Date Added</option>
+                <option value="id">ID</option>
+                <option value="category">Category</option>
+                <option value="weight">Weight</option>
+                <option value="expiry_date">Expiry Date</option>
+              </Select>
+              <IconButton
+                icon={sortOrder === 'asc' ? <FiArrowUp /> : <FiArrowDown />}
+                aria-label={`Sort ${sortOrder === 'asc' ? 'ascending' : 'descending'}`}
+                onClick={toggleSortOrder}
+                colorScheme={sortOrder === 'desc' ? "purple" : "gray"}
+                variant="outline"
+              />
+            </Flex>
+          </Box>
           <Box display="flex" alignItems="flex-end">
             <Button
               leftIcon={<FiFilter />}
@@ -267,13 +315,26 @@ function Items() {
                     <Th>Expiry Date</Th>
                     <Th>RFID</Th>
                     <Th>Status</Th>
+                    <Th>
+                      {/* Add Date column with visual indicator for current sort */}
+                      {sortBy === 'timestamp_in' ? (
+                        <Flex align="center">
+                          Date Added
+                          <Icon 
+                            as={sortOrder === 'asc' ? FiArrowUp : FiArrowDown} 
+                            ml={1} 
+                            color="edpSecondary"
+                          />
+                        </Flex>
+                      ) : "Date Added"}
+                    </Th>
                     <Th>Actions</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
                   {items.length === 0 ? (
                     <Tr>
-                      <Td colSpan={8} textAlign="center" py={10}>
+                      <Td colSpan={9} textAlign="center" py={10}>
                         <Text fontSize="lg" color="gray.500">No items found</Text>
                       </Td>
                     </Tr>
@@ -295,6 +356,7 @@ function Items() {
                             {item.timestamp_out ? "Out" : "In Stock"}
                           </Badge>
                         </Td>
+                        <Td>{formatDate(item.timestamp_in)}</Td>
                         <Td>
                           <IconButton
                             icon={<FiEye />}

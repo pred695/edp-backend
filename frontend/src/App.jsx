@@ -31,7 +31,6 @@ function App() {
       <Route path="/items" element={<Items />} />
       <Route path="/videos" element={<VideoList />} />
       <Route path="/videos/upload" element={<VideoUpload />} />
-      <Route path="/videos/:id" element={<VideoDetail />} />
     </Routes>
   );
 }

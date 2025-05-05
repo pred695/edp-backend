@@ -15,6 +15,7 @@ import {
   useToast,
   HStack,
   useDisclosure,
+  Image,
 } from '@chakra-ui/react';
 import React from 'react';
 import { BiLogOut, BiUserCheck, BiUserPlus, BiBox, BiVideo, BiTag } from 'react-icons/bi';
@@ -102,14 +103,12 @@ function Navbar() {
         zIndex="1"
       >
         <Link to="/">
-          <Text
-            color="edpPrimary"
-            fontWeight="600"
-            fontSize={['1.5rem', '1.7rem', '2.3rem', '2.7rem']}
-            ml={['20px', '30px', '40px', '50px']}
-          >
-            EDP
-          </Text>
+        <Image
+          src="../../public/SEWA.png"
+          alt="EDP Logo"
+          ml={['20px', '30px', '40px', '50px']}
+          height={['30px', '35px', '40px', '45px']} // adjust height responsively
+        />
         </Link>
         <Spacer />
 
