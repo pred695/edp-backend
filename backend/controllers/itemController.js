@@ -498,3 +498,80 @@ module.exports.deleteItem = async (req, res) => {
         });
     }
 };
+// @desc    Checkout an item and release RFID tag
+// @route   PUT /api/items/:id/checkout
+// @access  Private
+module.exports.checkoutItem = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rfid } = req.body;
+
+        // Check if item exists
+        const itemCheck = await pool.query(
+            'SELECT * FROM items WHERE id = $1',
+            [id]
+        );
+
+        if (itemCheck.rows.length === 0) {
+            return res.status(404).json({ message: 'Item not found' });
+        }
+
+        const currentItem = itemCheck.rows[0];
+
+        // Verify the RFID matches or is provided
+        if (!rfid) {
+            return res.status(400).json({ 
+                message: 'RFID tag is required for checkout',
+                errors: { rfid: 'Please provide the RFID tag for this item' }
+            });
+        }
+
+        // Check if the RFID matches the item's RFID
+        if (currentItem.rfid && currentItem.rfid !== rfid) {
+            return res.status(400).json({ 
+                message: 'RFID tag does not match',
+                errors: { rfid: `The provided RFID tag does not match the item's tag (${currentItem.rfid})` }
+            });
+        }
+
+        // Check if the item is already checked out
+        if (currentItem.timestamp_out) {
+            return res.status(400).json({ 
+                message: 'Item is already checked out',
+                errors: { rfid: 'This item has already been checked out' }
+            });
+        }
+
+        // Set current timestamp for checkout
+        const timestamp_out = new Date().toISOString();
+
+        // Update the item with checkout timestamp
+        const updateResult = await pool.query(
+            `UPDATE items 
+             SET timestamp_out = $1
+             WHERE id = $2
+             RETURNING *`,
+            [timestamp_out, id]
+        );
+
+        // Release the RFID tag (set used = false)
+        if (currentItem.rfid) {
+            await pool.query(
+                'UPDATE rfid_tags SET used = false WHERE rfid = $1',
+                [currentItem.rfid]
+            );
+        }
+
+        res.status(200).json({
+            message: 'Item checked out successfully and RFID tag released',
+            item: updateResult.rows[0]
+        });
+    } catch (err) {
+        console.error('Error checking out item:', err);
+        const errors = handleItemError(err);
+        res.status(400).json({ 
+            message: 'Failed to check out item', 
+            errors 
+        });
+    }
+};

@@ -21,6 +21,9 @@ router.get('/:id', ItemController.getItemById);
 // Update an item
 router.put('/:id', ItemController.updateItem);
 
+// Check out an item and release RFID tag
+router.put('/:id/checkout', ItemController.checkoutItem);
+
 // Delete an item (admin only)
 router.delete('/:id', ItemController.deleteItem);
 

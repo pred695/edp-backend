@@ -114,12 +114,9 @@ function ItemDetail({ isOpen, onClose, itemId, onItemUpdated }) {
     
     setIsCheckingOut(true);
     try {
-      // Update the item with timestamp_out=true
-      const response = await api.put(`/items/${item.id}`, {
-        timestamp_out: true,
+      const response = await api.put(`/items/${item.id}/checkout`, {
         rfid: parseInt(rfidInput)
       });
-      
       // Update the local state
       setItem(response.data.item);
       

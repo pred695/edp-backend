@@ -38,6 +38,12 @@ export const getItemById = (id) => {
   return api.get(`/items/${id}`);
 };
 
+// New checkout function
+export const checkoutItem = (id, data) => {
+  return api.put(`/items/${id}/checkout`, data);
+};
+
+
 // RFID APIs
 export const registerRfid = (rfidData) => {
   return api.post('/rfid/register', rfidData);
