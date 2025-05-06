@@ -434,7 +434,7 @@ function RoiList() {
                   onClick={onVideoUploadOpen}
                   _hover={{ bg: '#bf0055' }}
                 >
-                  Upload ROI Video
+                  Upload Monitoring Video
                 </Button>
               </Flex>
 

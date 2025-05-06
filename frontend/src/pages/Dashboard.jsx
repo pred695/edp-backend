@@ -318,7 +318,7 @@ function Dashboard() {
                   Getting Started
                 </Heading>
                 <Text mb={4}>
-                  Welcome to the EDP dashboard. This platform allows you to:
+                  Welcome to SeWa. This platform allows you to:
                 </Text>
                 <Box as="ul" pl={5} mb={4}>
                   <Box as="li" pb={1}>Track inventory with RFID technology</Box>
