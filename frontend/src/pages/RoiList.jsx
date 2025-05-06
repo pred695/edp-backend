@@ -35,6 +35,8 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  VStack,
+  Divider,
 } from '@chakra-ui/react';
 import { Helmet } from 'react-helmet-async';
 import { 
@@ -47,7 +49,11 @@ import {
   FiX,
   FiLoader,
   FiMaximize,
-  FiDownload
+  FiDownload,
+  FiMonitor,
+  FiShield,
+  FiMapPin,
+  FiExternalLink
 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -118,6 +124,17 @@ function RoiList() {
 
   const navigate = useNavigate();
   const toast = useToast();
+
+  // External model monitoring links
+  // These URLs will be replaced later with actual Google Colab links
+  const fireModelUrl = "https://colab.research.google.com/drive/13yFBIVv-79S8ofLE70o2eMOieV5hlD-F?usp=sharing"; 
+  const ppeComplianceModelUrl = "https://colab.research.google.com/drive/1m4jVSp35N41peXo1EvwnawazrIzfnJa6?usp=sharing";
+  const roiModelUrl = "https://colab.research.google.com/drive/1IcIOr4TAcsrBRSgQTRG3f6P8t9MtGAoi?usp=sharing";
+
+  // Redirect to external model monitoring pages
+  const openExternalModel = (url) => {
+    window.open(url, '_blank');
+  };
 
   // Fetch ROI videos
   const fetchVideos = async (pageNum = videoPage) => {
@@ -346,14 +363,60 @@ function RoiList() {
       <Navbar />
       <Box pt="6rem" px={{ base: 4, md: 8 }}>
         <Heading size="lg" mb={6} color="edpPrimary">
-          Region of Interest (ROI)
+          Region of Interest (ROI)/Smoke/PPE Compliance
         </Heading>
+
+        {/* Model Monitoring Section */}
+        <Box mb={8} p={4} bg="white" borderRadius="md" boxShadow="sm">
+          <Heading size="md" mb={4} color="edpPrimary">
+            Model Monitoring
+          </Heading>
+          <Text mb={4}>
+            Access our real-time model monitoring dashboards to view analytics and performance metrics.
+          </Text>
+          <Flex 
+            direction={{ base: "column", md: "row" }}
+            gap={4}
+            justify="center"
+          >
+            <Button
+              leftIcon={<FiMonitor />}
+              rightIcon={<FiExternalLink />}
+              colorScheme="red"
+              onClick={() => openExternalModel(fireModelUrl)}
+              size="lg"
+              minW="200px"
+            >
+              Monitor Smoke Detection Model
+            </Button>
+            <Button
+              leftIcon={<FiShield />}
+              rightIcon={<FiExternalLink />}
+              colorScheme="blue"
+              onClick={() => openExternalModel(ppeComplianceModelUrl)}
+              size="lg"
+              minW="200px"
+            >
+              Monitor PPE Compliance
+            </Button>
+            <Button
+              leftIcon={<FiMapPin />}
+              rightIcon={<FiExternalLink />}
+              colorScheme="purple"
+              onClick={() => openExternalModel(roiModelUrl)}
+              size="lg"
+              minW="200px"
+            >
+              Monitor ROI Model
+            </Button>
+          </Flex>
+        </Box>
 
         {/* Tabs for Videos and Logs */}
         <Tabs colorScheme="purple" variant="enclosed" mb={6}>
           <TabList>
-            <Tab>ROI Videos</Tab>
-            <Tab>RFID Logs</Tab>
+            <Tab>ROI/Smoke/PPE Videos</Tab>
+            <Tab>RFID/Smoke/PPE Logs</Tab>
           </TabList>
 
           <TabPanels>
@@ -361,7 +424,7 @@ function RoiList() {
             <TabPanel p={0} mt={4}>
               <Flex justify="space-between" align="center" mb={6}>
                 <Heading size="md" color="edpPrimary">
-                  ROI Videos
+                  ROI/Smoke/PPE Videos
                 </Heading>
                 <Button
                   leftIcon={<FiUpload />}
@@ -485,9 +548,15 @@ function RoiList() {
 
             {/* RFID Logs Tab */}
             <TabPanel p={0} mt={4}>
-              <Flex justify="space-between" align="center" mb={6}>
+              <Flex 
+                justify="space-between" 
+                align={{ base: "stretch", md: "center" }}
+                direction={{ base: "column", md: "row" }}
+                gap={{ base: 4, md: 0 }}
+                mb={6}
+              >
                 <Heading size="md" color="edpPrimary">
-                  RFID Logs
+                  RFID/Smoke/PPE Logs
                 </Heading>
                 <Button
                   leftIcon={<FiUpload />}
