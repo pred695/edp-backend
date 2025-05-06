@@ -122,11 +122,11 @@ function Dashboard() {
         <Card mb={6} variant="outline">
           <CardBody>
             <Heading size="lg" mb={6} color="edpPrimary">
-              Welcome to EDP Dashboard
+              Welcome to SeWa
             </Heading>
             <Text fontSize="lg" mb={6}>
-              Hello, <b>{userName}</b>! This is the Enterprise Data Platform dashboard. 
-              It provides tools for inventory management and tracking using RFID technology.
+              Hello, <b>{userName}</b>! This is SeWa(Secured Warehouse Management System).
+              Your Warehouse, Secured and Simplified.
             </Text>
             
             <Flex justifyContent="center" mt={4}>
