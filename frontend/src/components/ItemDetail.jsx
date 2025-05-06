@@ -22,6 +22,10 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
+  FormControl,
+  FormLabel,
+  Input,
+  FormHelperText,
 } from '@chakra-ui/react';
 import { getItemById } from '../utils/api';
 import api from '../utils/api';
@@ -31,6 +35,8 @@ function ItemDetail({ isOpen, onClose, itemId, onItemUpdated }) {
   const [loading, setLoading] = useState(true);
   const [isCheckoutDialogOpen, setIsCheckoutDialogOpen] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [rfidInput, setRfidInput] = useState('');
+  const [rfidError, setRfidError] = useState('');
   const cancelRef = React.useRef();
   const toast = useToast();
 
@@ -68,14 +74,50 @@ function ItemDetail({ isOpen, onClose, itemId, onItemUpdated }) {
     return date.toLocaleDateString();
   };
 
+  const handleRfidChange = (e) => {
+    setRfidInput(e.target.value);
+    // Clear error when user types
+    if (rfidError) {
+      setRfidError('');
+    }
+  };
+
+  const validateRfid = () => {
+    // Check if RFID is empty
+    if (!rfidInput.trim()) {
+      setRfidError('RFID tag is required');
+      return false;
+    }
+
+    // Check if RFID is a valid number
+    if (isNaN(rfidInput) || parseInt(rfidInput) <= 0) {
+      setRfidError('RFID tag must be a valid positive number');
+      return false;
+    }
+
+    // If item has an RFID, check if it matches
+    if (item.rfid && parseInt(rfidInput) !== item.rfid) {
+      setRfidError(`RFID tag does not match item's registered tag (${item.rfid})`);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleCheckoutItem = async () => {
     if (!item || item.timestamp_out) return;
+    
+    // Validate RFID input
+    if (!validateRfid()) {
+      return;
+    }
     
     setIsCheckingOut(true);
     try {
       // Update the item with timestamp_out=true
       const response = await api.put(`/items/${item.id}`, {
-        timestamp_out: true
+        timestamp_out: true,
+        rfid: parseInt(rfidInput)
       });
       
       // Update the local state
@@ -96,11 +138,14 @@ function ItemDetail({ isOpen, onClose, itemId, onItemUpdated }) {
         onItemUpdated();
       }
       
+      // Reset form and close dialog
+      setRfidInput('');
+      setIsCheckoutDialogOpen(false);
     } catch (error) {
       console.error('Error checking out item:', error);
       toast({
         title: 'Error',
-        description: 'Failed to check out item',
+        description: error.response?.data?.message || 'Failed to check out item',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -108,8 +153,13 @@ function ItemDetail({ isOpen, onClose, itemId, onItemUpdated }) {
       });
     } finally {
       setIsCheckingOut(false);
-      setIsCheckoutDialogOpen(false);
     }
+  };
+
+  const handleCancelCheckout = () => {
+    setRfidInput('');
+    setRfidError('');
+    setIsCheckoutDialogOpen(false);
   };
 
   return (
@@ -229,11 +279,11 @@ function ItemDetail({ isOpen, onClose, itemId, onItemUpdated }) {
         </ModalFooter>
       </ModalContent>
       
-      {/* Checkout Confirmation Dialog */}
+      {/* RFID Checkout Dialog */}
       <AlertDialog
         isOpen={isCheckoutDialogOpen}
         leastDestructiveRef={cancelRef}
-        onClose={() => setIsCheckoutDialogOpen(false)}
+        onClose={handleCancelCheckout}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
@@ -242,11 +292,31 @@ function ItemDetail({ isOpen, onClose, itemId, onItemUpdated }) {
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure you want to check out this item? This will mark the item as "Out of Stock" and release the RFID tag.
+              <Text mb={4}>
+                Please confirm the RFID tag for this item before checking it out.
+              </Text>
+              
+              <FormControl isRequired isInvalid={!!rfidError}>
+                <FormLabel>RFID Tag</FormLabel>
+                <Input
+                  type="number"
+                  placeholder="Enter RFID tag"
+                  value={rfidInput}
+                  onChange={handleRfidChange}
+                  min="1"
+                />
+                {rfidError ? (
+                  <FormHelperText color="red.500">{rfidError}</FormHelperText>
+                ) : (
+                  <FormHelperText>
+                    {item?.rfid ? `Registered RFID: ${item.rfid}` : "Enter the RFID tag for this item"}
+                  </FormHelperText>
+                )}
+              </FormControl>
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsCheckoutDialogOpen(false)}>
+              <Button ref={cancelRef} onClick={handleCancelCheckout}>
                 Cancel
               </Button>
               <Button 
@@ -254,6 +324,7 @@ function ItemDetail({ isOpen, onClose, itemId, onItemUpdated }) {
                 onClick={handleCheckoutItem} 
                 ml={3}
                 isLoading={isCheckingOut}
+                isDisabled={!rfidInput}
               >
                 Check Out
               </Button>
